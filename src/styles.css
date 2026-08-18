@@ -551,7 +551,10 @@ html.fonts-loading nav,html.fonts-loading section,html.fonts-loading .marquee,ht
 
 
 /* REELS ONLY — true center-stage carousel */
+#reels{max-width:100%;overflow:hidden} /* full-bleed so 50vw centering stays correct on zoom */
+#reels .sec-head{max-width:1320px;margin:0 auto;padding:0 20px} /* keep title aligned with other sections */
 #reels .reels-scroll.reel-stage{
+  position:relative; /* make cards' offsetParent the stage for correct JS centering */
   display:flex;
   align-items:center;
   justify-content:flex-start;
@@ -598,7 +601,7 @@ html.fonts-loading nav,html.fonts-loading section,html.fonts-loading .marquee,ht
   #reels .reel-stage > .reel{width:72vw;min-width:72vw;flex-basis:72vw;max-width:300px}
 }
 @media(min-width:901px){
-  #reels .reels-scroll.reel-stage{padding-left:calc(50vw - 122.5px);padding-right:calc(50vw - 122.5px)}
+  #reels .reels-scroll.reel-stage{padding-left:calc(50vw - 125px);padding-right:calc(50vw - 125px)}
 }
 
 
