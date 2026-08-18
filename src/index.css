@@ -54,15 +54,13 @@ body {
   margin: 0;
 }
 
+/* #root is the React mount point — full width, no template border/centering.
+   The portfolio layout lives entirely in styles.css. */
 #root {
-  width: 1126px;
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+  display: block;
   box-sizing: border-box;
 }
 

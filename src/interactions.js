@@ -63,43 +63,103 @@ export function initPortfolio() {
     document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
   })();
 
-  /* ---------- GLOBAL: ONE ACTIVE AUDIO/VIDEO AT A TIME ---------- */
+  /* ---------- GLOBAL: ONE VIDEO AT A TIME + SOUND TOGGLE ---------- */
   (function () {
-    var unlocked = false;
+    var soundOn = false;                 // sound is OFF until the user toggles it
+    window.__portfolioSoundOn = false;
     window.__portfolioAudioUnlock = false;
+
     function stopOthers(active) {
       document.querySelectorAll('video').forEach(function (v) {
         if (v !== active) { v.pause(); v.muted = true; }
       });
     }
-    function playVideo(v, withAudio) {
+    // Play one video; every other video on the page is stopped/muted.
+    function playVideo(v) {
       if (!v) return;
       stopOthers(v);
       v.loop = true; v.playsInline = true; v.volume = 1;
-      v.muted = !withAudio;
+      v.muted = !soundOn;
       var p = v.play(); if (p && p.catch) p.catch(function () {});
     }
     window.__activatePortfolioVideo = function (v) { stopOthers(v); };
-    function unlock() {
-      unlocked = true;
-      window.__portfolioAudioUnlock = true;
-      var active = document.querySelector(
+    window.__portfolioPlayVideo = playVideo;
+    window.__portfolioIsSoundOn = function () { return soundOn; };
+
+    // Any <video> that starts playing anywhere pauses+mutes the rest.
+    document.addEventListener('play', function (e) {
+      var v = e.target;
+      if (v && v.tagName === 'VIDEO') {
+        if (!v.closest('.showreel-video')) v.muted = !soundOn;
+        stopOthers(v);
+      }
+    }, true);
+
+    /* ---- Floating SOUND ON/OFF toggle (fixed, works on every section) ---- */
+    var btn = document.createElement('button');
+    btn.id = 'audioToggle';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Toggle sound');
+    btn.title = 'Toggle sound';
+    btn.innerHTML = '<span class="at-ic">♪</span><span class="at-txt">SOUND OFF</span>';
+    document.body.appendChild(btn);
+
+    function render() {
+      btn.classList.toggle('on', soundOn);
+      var t = btn.querySelector('.at-txt'); if (t) t.textContent = soundOn ? 'SOUND ON' : 'SOUND OFF';
+      var ic = btn.querySelector('.at-ic'); if (ic) ic.textContent = soundOn ? '♫' : '♪';
+    }
+    function applyToActive() {
+      var v = document.querySelector(
         '.reel-stage .is-reel-center video,' +
         '.cinematic-stage .cin-center video,' +
         '.film-arc-card[data-pos="2"] video,' +
-        '.grade-video-wrap video,' +
-        '.portfolio-carousel .is-center video'
+        '.grade-video-wrap video'
       );
-      if (active) playVideo(active, true);
+      if (v) {
+        v.muted = !soundOn;
+        if (soundOn) { v.volume = 1; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      }
     }
-    document.addEventListener('pointerdown', unlock, { once: true, passive: true });
-    document.addEventListener('keydown', unlock, { once: true });
-    document.addEventListener('play', function (e) {
-      var v = e.target;
-      if (v && v.tagName === 'VIDEO') { stopOthers(v); }
-    }, true);
-    window.__portfolioPlayVideo = playVideo;
-    window.__portfolioAudioUnlocked = function () { return unlocked; };
+    function toggle() {
+      soundOn = !soundOn;
+      window.__portfolioSoundOn = soundOn;
+      window.__portfolioAudioUnlock = soundOn;
+      render();
+      applyToActive();
+    }
+    btn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); toggle(); });
+    render();
+
+    /* ---- Single active video follows scroll: the most-visible carousel
+           autoplays its centre card; all other sections stay silent. ---- */
+    var stages = [];
+    var ratios = {};
+    function registerStage(el, selector) {
+      if (!el) return;
+      stages.push({ el: el, sel: selector });
+      ratios[el] = 0;
+    }
+    function playMostVisible() {
+      var best = null, bestR = 0;
+      stages.forEach(function (s) {
+        var r = ratios[s.el] || 0;
+        if (r > bestR) { bestR = r; best = s; }
+      });
+      if (best) { var v = best.el.querySelector(best.sel); if (v) playVideo(v); }
+    }
+    var io = (typeof IntersectionObserver !== 'undefined')
+      ? new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { ratios[en.target] = en.isIntersecting ? en.intersectionRatio : 0; });
+        if (io._t) clearTimeout(io._t);
+        io._t = setTimeout(playMostVisible, 180);
+      }, { threshold: [0.05, 0.2, 0.4, 0.6, 0.8] })
+      : null;
+    function registerObserved(el, selector) {
+      registerStage(el, selector);
+      if (el && io) io.observe(el);
+    }
+    window.__registerVideoStage = registerObserved;
   })();
 
   /* ---------- GENERIC CENTER-STAGE HELPERS ---------- */
@@ -240,6 +300,8 @@ export function initPortfolio() {
     trackRecentering(stage, function () {
       go(current, false);
     });
+    // Register for the global single-active-video (follows scroll).
+    window.__registerVideoStage(stage, '.is-reel-center video');
   })();
 
   /* =========================================================
@@ -297,7 +359,7 @@ export function initPortfolio() {
         if (i !== cur) { e.preventDefault(); e.stopImmediatePropagation(); if (!moving) go(i, true); }
         else {
           var v = card.querySelector('video');
-          if (v) { window.__portfolioAudioUnlock = true; window.__portfolioPlayVideo(v, true); }
+          if (v) window.__portfolioPlayVideo(v);
         }
       }, true);
     });
@@ -317,6 +379,7 @@ export function initPortfolio() {
     });
 
     trackRecentering(cs, function () { go(cur, false); });
+    window.__registerVideoStage(cs, '.cin-center video');
   })();
 
   /* =========================================================
@@ -477,7 +540,7 @@ export function initPortfolio() {
         move(d > 0 ? 1 : -1);
       });
       c.addEventListener('click', function () {
-        if (i === center) { var v = c.querySelector('video'); if (v) { window.__portfolioAudioUnlock = true; window.__portfolioPlayVideo(v, true); } return; }
+        if (i === center) { var v = c.querySelector('video'); if (v) window.__portfolioPlayVideo(v); return; }
         var d = i - center;
         if (d > n / 2) d -= n;
         if (d < -n / 2) d += n;
@@ -487,6 +550,7 @@ export function initPortfolio() {
     if (prev) prev.addEventListener('click', function () { move(-1); });
     if (next) next.addEventListener('click', function () { move(1); });
     paint(); setTimeout(play, 500);
+    window.__registerVideoStage(stage, '.film-arc-card[data-pos="2"] video');
     // films arc is CSS-transform based (no scroll), so nothing to recenter on zoom.
   })();
 
@@ -496,8 +560,9 @@ export function initPortfolio() {
   (function () {
     var gv = document.querySelector('.grade-video-wrap video');
     if (!gv) return;
-    gv.addEventListener('mouseenter', function () { window.__portfolioPlayVideo(gv, !!window.__portfolioAudioUnlock); });
-    gv.addEventListener('click', function () { window.__portfolioAudioUnlock = true; window.__portfolioPlayVideo(gv, true); });
+    gv.addEventListener('mouseenter', function () { window.__portfolioPlayVideo(gv); });
+    gv.addEventListener('click', function () { window.__portfolioPlayVideo(gv); });
+    window.__registerVideoStage(document.querySelector('.grade-video-wrap'), 'video');
   })();
 
   /* =========================================================
