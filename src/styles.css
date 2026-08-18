@@ -784,6 +784,17 @@ section{max-width:1320px}
   box-shadow:0 20px 55px rgba(0,0,0,.45);
 }
 .poster-carousel > .poster img{ width:100%; height:100%; border-radius:inherit; display:block; }
+/* varied sizes for staggered masonry (reference look) */
+/* portrait sections: song/flyer — tall / medium / square / medium */
+.poster-carousel:not(.ad-carousel) > .poster:nth-child(4n+1){ aspect-ratio:2/3; }
+.poster-carousel:not(.ad-carousel) > .poster:nth-child(4n+2){ aspect-ratio:3/4; }
+.poster-carousel:not(.ad-carousel) > .poster:nth-child(4n+3){ aspect-ratio:4/5; }
+.poster-carousel:not(.ad-carousel) > .poster:nth-child(4n+4){ aspect-ratio:3/4; }
+/* ad section: landscape variations */
+.ad-carousel > .poster:nth-child(3n+1){ aspect-ratio:16/9; }
+.ad-carousel > .poster:nth-child(3n+2){ aspect-ratio:4/3; }
+.ad-carousel > .poster:nth-child(3n+3){ aspect-ratio:3/2; }
+
 .poster-carousel > .poster:hover{
   border-color:rgba(255,199,44,.6);
   box-shadow:0 28px 75px rgba(0,0,0,.6);
