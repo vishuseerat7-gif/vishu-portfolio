@@ -63,6 +63,25 @@ export function initPortfolio() {
     document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
   })();
 
+  /* ---------- PAGE SCROLL OVER CAROUSELS ---------- */
+  // Let vertical mouse-wheel / trackpad scrolling always move the PAGE, even
+  // when the pointer is hovering a horizontally-scrolling carousel or video.
+  (function () {
+    var stages = document.querySelectorAll(
+      '.reels-scroll.reel-stage, .cinematic-stage, .modeling-stage, .portfolio-carousel'
+    );
+    stages.forEach(function (stage) {
+      stage.addEventListener('wheel', function (e) {
+        var dx = Math.abs(e.deltaX), dy = Math.abs(e.deltaY);
+        // Clear horizontal intent → let the carousel handle it.
+        if (dx > dy && dx > 4) return;
+        // Otherwise scroll the page vertically instead of trapping the wheel.
+        e.preventDefault();
+        window.scrollBy({ top: e.deltaY, behavior: 'auto' });
+      }, { passive: false });
+    });
+  })();
+
   /* ---------- GLOBAL: ONE VIDEO AT A TIME + SOUND TOGGLE ---------- */
   (function () {
     var soundOn = false;                 // sound is OFF until the user toggles it

@@ -512,7 +512,7 @@ html.fonts-loading nav,html.fonts-loading section,html.fonts-loading .marquee,ht
 .portfolio-carousel-section .sec-head{max-width:1320px;margin:0 auto;padding:0 20px}
 .portfolio-carousel{display:flex;align-items:center;gap:0;overflow-x:auto;overflow-y:visible;padding-top:34px;padding-bottom:54px;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x;}
 .portfolio-carousel::-webkit-scrollbar{display:none}
-.portfolio-carousel > .poster,.portfolio-carousel > .reel,.portfolio-carousel > .cinematic-card{flex:0 0 auto;scroll-snap-align:center;transform:scale(.74);opacity:.28;filter:saturate(.58) brightness(.72);transition:transform .55s cubic-bezier(.18,.82,.22,1),opacity .45s ease,filter .45s ease,box-shadow .55s ease,border-color .45s ease;will-change:transform,opacity;cursor:pointer}
+.portfolio-carousel > .poster,.portfolio-carousel > .reel,.portfolio-carousel > .cinematic-card{flex:0 0 auto;scroll-snap-align:center;transform:scale(.74);opacity:.6;filter:saturate(.85) brightness(.88);transition:transform .55s cubic-bezier(.18,.82,.22,1),opacity .45s ease,filter .45s ease,box-shadow .55s ease,border-color .45s ease;will-change:transform,opacity;cursor:pointer}
 .portfolio-carousel > .poster.is-center,.portfolio-carousel > .reel.is-center,.portfolio-carousel > .cinematic-card.is-center{transform:scale(1.08);opacity:1;filter:none;z-index:5}
 /* Side cards visibly sit outside the hero card. These padding values guarantee the first/last item can truly reach center. */
 .song-carousel,.flyer-carousel{padding-left:calc(50vw - 150px);padding-right:calc(50vw - 150px)}
@@ -578,8 +578,8 @@ html.fonts-loading nav,html.fonts-loading section,html.fonts-loading .marquee,ht
   flex:0 0 245px;
   transform:scale(.72);
   transform-origin:center center;
-  opacity:.24;
-  filter:saturate(.55) brightness(.62);
+  opacity:.6;
+  filter:saturate(.85) brightness(.9);
   transition:transform .65s cubic-bezier(.16,.84,.24,1),opacity .5s ease,filter .5s ease,box-shadow .65s ease;
   cursor:pointer;
   z-index:1;
@@ -591,8 +591,8 @@ html.fonts-loading nav,html.fonts-loading section,html.fonts-loading .marquee,ht
   z-index:10;
   box-shadow:0 34px 90px rgba(0,0,0,.68),0 0 45px rgba(230,54,54,.18);
 }
-#reels .reel-stage > .reel.is-reel-side-near{opacity:.48;filter:saturate(.75) brightness(.78)}
-#reels .reel-stage > .reel.is-reel-far{opacity:.20;filter:saturate(.45) brightness(.58)}
+#reels .reel-stage > .reel.is-reel-side-near{opacity:.82;filter:saturate(.9) brightness(.96)}
+#reels .reel-stage > .reel.is-reel-far{opacity:.52;filter:saturate(.7) brightness(.8)}
 #reels .reel-stage > .reel .playhint{transition:transform .35s ease,background .35s ease}
 #reels .reel-stage > .reel.is-reel-center .playhint{transform:scale(1.08);background:rgba(230,54,54,.45)}
 #reels .reel-stage > .reel.is-reel-center::before{content:"";position:absolute;inset:-1px;border:1px solid rgba(255,255,255,.12);z-index:5;pointer-events:none}
@@ -661,7 +661,7 @@ html.fonts-loading nav,html.fonts-loading section,html.fonts-loading .marquee,ht
 .cinematic-stage::-webkit-scrollbar{display:none}
 .cinematic-stage .cinematic-card{
   position:relative;flex:0 0 280px;width:280px;aspect-ratio:9/16;
-  transform:scale(.72);opacity:.22;filter:saturate(.5) brightness(.62);
+  transform:scale(.72);opacity:.6;filter:saturate(.85) brightness(.9);
   transition:transform .65s cubic-bezier(.16,.84,.24,1),opacity .5s ease,filter .5s ease,box-shadow .65s ease;
   cursor:pointer;z-index:1;margin:0;
 }
@@ -669,7 +669,7 @@ html.fonts-loading nav,html.fonts-loading section,html.fonts-loading .marquee,ht
   transform:scale(1.08);opacity:1;filter:none;z-index:10;
   box-shadow:0 34px 90px rgba(0,0,0,.68),0 0 45px rgba(230,54,54,.16);
 }
-.cinematic-stage .cinematic-card.cin-near{opacity:.48;filter:saturate(.75) brightness(.78)}
+.cinematic-stage .cinematic-card.cin-near{opacity:.82;filter:saturate(.9) brightness(.96)}
 .cinematic-stage .cinematic-card video{pointer-events:none}
 @media(max-width:700px){
  .cinematic-stage{height:450px;padding-left:calc(50vw - 36vw);padding-right:calc(50vw - 36vw)}
@@ -691,7 +691,7 @@ html.fonts-loading nav,html.fonts-loading section,html.fonts-loading .marquee,ht
  transition:transform .55s ease,opacity .45s ease,filter .45s ease,border-color .45s ease;
 }
 .model-card img{width:100%;height:100%;object-fit:cover;display:block}
-.model-card:not(.is-model-center){transform:scale(.82);opacity:.38;filter:brightness(.62) saturate(.65)}
+.model-card:not(.is-model-center){transform:scale(.82);opacity:.65;filter:brightness(.85) saturate(.85)}
 .model-card.is-model-center{transform:scale(1);opacity:1;filter:none;border-color:rgba(255,199,44,.35);box-shadow:0 30px 90px rgba(0,0,0,.65)}
 .model-cap{position:absolute;left:0;right:0;bottom:0;padding:55px 20px 16px;background:linear-gradient(transparent,rgba(0,0,0,.88));font-family:var(--mono);color:#fff;z-index:2}
 .model-cap b{display:block;color:var(--gold);font-size:.78rem;letter-spacing:2px}
