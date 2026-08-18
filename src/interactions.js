@@ -402,92 +402,77 @@ export function initPortfolio() {
   })();
 
   /* =========================================================
-     POSTER CAROUSELS (song / flyer / ad) — infinite loop
+     POSTER CAROUSELS (song / flyer / ad) — continuous marquee
      ========================================================= */
   (function () {
     document.querySelectorAll('.poster-carousel').forEach(function (stage) {
       var originals = Array.from(stage.querySelectorAll(':scope > .poster'));
       if (!originals.length) return;
-      var before = originals.map(function (c) { var x = c.cloneNode(true); x.dataset.loopClone = 'before'; return x; });
-      var after = originals.map(function (c) { var x = c.cloneNode(true); x.dataset.loopClone = 'after'; return x; });
-      stage.prepend.apply(stage, before);
-      stage.append.apply(stage, after);
-      var cards = Array.from(stage.querySelectorAll(':scope > .poster'));
-      var N = originals.length;
-      var current = N + Math.min(2, Math.floor(N / 2));
-      var moving = false, timer = null;
-      function target(card) { return card.offsetLeft - (stage.clientWidth - card.offsetWidth) / 2; }
-      function paint(i) {
-        cards.forEach(function (c, j) {
-          c.classList.toggle('is-center', j === i);
-          c.style.zIndex = j === i ? '10' : '';
-        });
-      }
-      function normalize() {
-        if (current < N) { current += N; stage.scrollLeft = target(cards[current]); paint(current); }
-        else if (current >= 2 * N) { current -= N; stage.scrollLeft = target(cards[current]); paint(current); }
-      }
-      function go(i, animate) {
-        if (moving && animate) return;
-        current = i; paint(i); moving = !!animate;
-        stage.scrollTo({ left: target(cards[i]), behavior: animate ? 'smooth' : 'auto' });
-        if (animate) { clearTimeout(timer); timer = setTimeout(function () { moving = false; normalize(); }, 760); }
-        else { moving = false; normalize(); }
-      }
-      requestAnimationFrame(function () { paint(current); stage.scrollLeft = target(cards[current]); });
-      cards.forEach(function (card, i) {
-        card.addEventListener('mouseenter', function () {
-          if (moving || i === current) return;
-          clearTimeout(timer);
-          timer = setTimeout(function () { if (!moving && i !== current) go(i, true); }, 55);
-        });
-        card.addEventListener('click', function (e) {
-          if (i !== current) { e.preventDefault(); e.stopImmediatePropagation(); if (!moving) go(i, true); }
-        }, true);
+      // Wrap posters in one animated track, duplicated for a seamless infinite loop.
+      var track = document.createElement('div');
+      track.className = 'poster-track';
+      originals.forEach(function (p) { track.appendChild(p); });
+      originals.forEach(function (p, j) {
+        var c = p.cloneNode(true);
+        c.dataset.marqueeClone = '1';
+        c.dataset.ref = String(j);
+        track.appendChild(c);
       });
-      trackRecentering(stage, function () { go(current, false); });
+      stage.appendChild(track);
+      // Pause auto-scroll while the user hovers / touches.
+      track.addEventListener('mouseenter', function () { track.style.animationPlayState = 'paused'; });
+      track.addEventListener('mouseleave', function () { track.style.animationPlayState = 'running'; });
+      track.addEventListener('touchstart', function () { track.style.animationPlayState = 'paused'; }, { passive: true });
+      track.addEventListener('touchend', function () { track.style.animationPlayState = 'running'; }, { passive: true });
     });
   })();
-
   /* =========================================================
-     POSTER FULLSCREEN VIEWER
+     POSTER FULLSCREEN VIEWER — click any poster, Esc closes
      ========================================================= */
   (function () {
     var v = document.getElementById('posterViewer');
     if (!v) return;
-    var img = v.querySelector('.viewer-img'), meta = v.querySelector('.viewer-meta');
-    var cards = Array.prototype.slice.call(document.querySelectorAll('.poster-carousel .poster:not([data-loop-clone])'));
-    var curCard = null;
-    function categoryCards(card) {
-      var section = card.closest('.poster-category-section');
-      return section ? Array.prototype.slice.call(section.querySelectorAll('.poster:not([data-loop-clone])')) : cards;
-    }
+    var img = v.querySelector('.viewer-img');
+    var meta = v.querySelector('.viewer-meta');
+    var list = Array.prototype.slice.call(document.querySelectorAll('.poster-carousel .poster:not([data-marquee-clone])'));
+    var cur = -1;
+
     function show(card) {
-      var list = categoryCards(card), i = list.indexOf(card); if (i < 0) i = 0;
-      curCard = card;
-      img.src = card.dataset.src || (card.querySelector('img') ? card.querySelector('img').src : '');
-      meta.textContent = (card.querySelector('.num') || { textContent: '' }).textContent + ' — ' + (i + 1) + ' / ' + list.length;
-      v.classList.add('open'); v.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden';
+      var im = card.querySelector('img');
+      img.src = (im && (im.currentSrc || im.src)) || card.dataset.src || '';
+      var num = card.querySelector('.num');
+      cur = (card.dataset.ref !== undefined) ? parseInt(card.dataset.ref, 10) : list.indexOf(card);
+      if (cur < 0) cur = 0;
+      if (meta) meta.textContent = (num ? num.textContent : '') + (list.length ? '  —  ' + (cur + 1) + ' / ' + list.length : '');
+      v.classList.add('open');
+      v.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
     }
     function step(dir) {
-      if (!curCard) return;
-      var list = categoryCards(curCard), i = list.indexOf(curCard);
-      i = (i + dir + list.length) % list.length; show(list[i]);
+      if (!list.length) return;
+      cur = (cur + dir + list.length) % list.length;
+      show(list[cur]);
     }
     function hide() {
-      v.classList.remove('open'); v.setAttribute('aria-hidden', 'true'); img.src = ''; document.body.style.overflow = ''; curCard = null;
+      v.classList.remove('open');
+      v.setAttribute('aria-hidden', 'true');
+      if (img) img.src = '';
+      document.body.style.overflow = '';
+      cur = -1;
     }
-    cards.forEach(function (card) {
-      card.addEventListener('click', function (e) {
-        if (!card.classList.contains('is-center')) { e.preventDefault(); e.stopImmediatePropagation(); return; }
-        e.stopImmediatePropagation(); show(card);
-      });
+
+    list.forEach(function (card) {
+      card.addEventListener('click', function (e) { e.preventDefault(); e.stopImmediatePropagation(); show(card); });
     });
+    document.querySelectorAll('.poster-carousel .poster[data-marquee-clone]').forEach(function (clone) {
+      clone.addEventListener('click', function (e) { e.preventDefault(); e.stopImmediatePropagation(); show(clone); });
+    });
+
     var prev = v.querySelector('.viewer-prev'), next = v.querySelector('.viewer-next'), close = v.querySelector('.viewer-close');
-    if (prev) prev.onclick = function () { step(-1); };
-    if (next) next.onclick = function () { step(1); };
-    if (close) close.onclick = hide;
-    v.onclick = function (e) { if (e.target === v) hide(); };
+    if (prev) prev.addEventListener('click', function () { step(-1); });
+    if (next) next.addEventListener('click', function () { step(1); });
+    if (close) close.addEventListener('click', hide);
+    v.addEventListener('click', function (e) { if (e.target === v) hide(); });
     document.addEventListener('keydown', function (e) {
       if (!v.classList.contains('open')) return;
       if (e.key === 'Escape') hide();
@@ -495,7 +480,6 @@ export function initPortfolio() {
       if (e.key === 'ArrowRight') step(1);
     });
   })();
-
   /* =========================================================
      3D MODELING — 16:9 category carousel
      ========================================================= */

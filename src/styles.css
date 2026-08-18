@@ -768,3 +768,47 @@ section{max-width:1320px}
 @media (min-width:1600px){
   section{max-width:1560px}
 }
+
+/* ===== SONG / FLYER / AD POSTER MARQUEE (continuous, full posters) ===== */
+.poster-carousel{
+  overflow:hidden !important;
+  padding-left:0 !important;
+  padding-right:0 !important;
+  touch-action:pan-y;
+}
+.poster-carousel .poster-track{
+  display:flex;
+  align-items:center;
+  gap:26px;
+  width:max-content;
+  will-change:transform;
+  animation:posterMarquee 50s linear infinite;
+  padding:18px 0;
+}
+.poster-carousel:hover .poster-track{animation-play-state:paused}
+.poster-carousel .poster-track .poster{
+  flex:0 0 auto;
+  width:min(360px,72vw);
+  aspect-ratio:16/9;
+  opacity:1 !important;
+  filter:none !important;
+  transform:none !important;
+  cursor:pointer;
+  transition:transform .35s ease, box-shadow .35s ease;
+}
+.poster-carousel .poster-track .poster img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:8px;
+}
+.poster-carousel .poster-track .poster:hover{
+  transform:translateY(-6px) scale(1.03);
+  box-shadow:0 22px 60px rgba(0,0,0,.6);
+}
+@keyframes posterMarquee{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+@media (prefers-reduced-motion: reduce){.poster-carousel .poster-track{animation:none}}
+@media (max-width:600px){.poster-carousel .poster-track{gap:16px}.poster-carousel .poster-track .poster{width:64vw}}
