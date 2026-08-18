@@ -389,100 +389,46 @@ export function initPortfolio() {
     window.__registerVideoStage(cs, '.cin-center video');
   })();
 
-  /* ---------- POSTER CAROUSELS: vertical auto-scroll wall (top to bottom) ---------- */
-  (function () {
-    var stages = document.querySelectorAll('.poster-carousel');
-    Array.prototype.forEach.call(stages, function (stage) {
-      var posters = Array.prototype.slice.call(stage.querySelectorAll(':scope > .poster'));
-      if (!posters.length) return;
-      var track = document.createElement('div');
-      track.className = 'poster-track';
-      posters.forEach(function (p) { track.appendChild(p); });
-      var dup = posters.map(function (p) { var c = p.cloneNode(true); c.setAttribute('data-marquee-clone', '1'); return c; });
-      dup.forEach(function (c) { track.appendChild(c); });
-      stage.appendChild(track);
-    });
-  })();
-
-  /* ---------- POSTER FULLSCREEN VIEWER (ANY poster opens) ---------- */
+  /* ---------- POSTER FULLSCREEN VIEWER (ANY poster click opens, Esc closes) ---------- */
   (function () {
     var v = document.getElementById('posterViewer');
     if (!v) return;
     var img = v.querySelector('.viewer-img'), meta = v.querySelector('.viewer-meta');
-    var all = Array.prototype.slice.call(document.querySelectorAll('.poster-carousel .poster:not([data-marquee-clone])'));
     var curCard = null;
     function categoryCards(card) {
       var section = card.closest('.poster-category-section');
-      return section ? Array.prototype.slice.call(section.querySelectorAll('.poster:not([data-marquee-clone])')) : all;
+      return section
+        ? Array.prototype.slice.call(section.querySelectorAll('.poster'))
+        : Array.prototype.slice.call(document.querySelectorAll('.poster-carousel .poster'));
     }
     function show(card) {
-      var list = categoryCards(card), i = list.indexOf(card); if (i < 0) i = 0;
+      var list = categoryCards(card);
+      var i = list.indexOf(card); if (i < 0) i = 0;
       curCard = card;
-      img.src = card.dataset.src;
-      meta.textContent = ((card.querySelector('.num') || {}).textContent || '') + ' \u2014 ' + (i + 1) + ' / ' + list.length;
+      var im = card.querySelector('img');
+      img.src = (im && (im.currentSrc || im.src)) || card.dataset.src || '';
+      if (meta) meta.textContent = ((card.querySelector('.num') || { textContent: '' }).textContent || '') + ' \u2014 ' + (i + 1) + ' / ' + list.length;
       v.classList.add('open'); v.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden';
     }
     function step(dir) {
       if (!curCard) return;
-      var list = categoryCards(curCard), i = list.indexOf(curCard);
-      i = (i + dir + list.length) % list.length; show(list[i]);
-    }
-    function hide() { v.classList.remove('open'); v.setAttribute('aria-hidden', 'true'); img.src = ''; document.body.style.overflow = ''; curCard = null; }
-    all.forEach(function (card) {
-      card.addEventListener('click', function (e) { e.stopImmediatePropagation(); show(card); });
-    });
-    var prev = v.querySelector('.viewer-prev'), next = v.querySelector('.viewer-next'), close = v.querySelector('.viewer-close');
-    if (prev) prev.onclick = function () { step(-1); };
-    if (next) next.onclick = function () { step(1); };
-    if (close) close.onclick = hide;
-    v.onclick = function (e) { if (e.target === v) hide(); };
-    document.addEventListener('keydown', function (e) {
-      if (!v.classList.contains('open')) return;
-      if (e.key === 'Escape') hide();
-      if (e.key === 'ArrowLeft') step(-1);
-      if (e.key === 'ArrowRight') step(1);
-    });
-  })();
-
-  /* =========================================================
-     POSTER FULLSCREEN VIEWER
-     ========================================================= */
-  (function () {
-    var v = document.getElementById('posterViewer');
-    if (!v) return;
-    var img = v.querySelector('.viewer-img'), meta = v.querySelector('.viewer-meta');
-    var cards = Array.prototype.slice.call(document.querySelectorAll('.poster-carousel .poster:not([data-loop-clone])'));
-    var curCard = null;
-    function categoryCards(card) {
-      var section = card.closest('.poster-category-section');
-      return section ? Array.prototype.slice.call(section.querySelectorAll('.poster:not([data-loop-clone])')) : cards;
-    }
-    function show(card) {
-      var list = categoryCards(card), i = list.indexOf(card); if (i < 0) i = 0;
-      curCard = card;
-      img.src = card.dataset.src || (card.querySelector('img') ? card.querySelector('img').src : '');
-      meta.textContent = (card.querySelector('.num') || { textContent: '' }).textContent + ' — ' + (i + 1) + ' / ' + list.length;
-      v.classList.add('open'); v.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden';
-    }
-    function step(dir) {
-      if (!curCard) return;
-      var list = categoryCards(curCard), i = list.indexOf(curCard);
+      var list = categoryCards(curCard), i = list.indexOf(curCard); if (i < 0) i = 0;
       i = (i + dir + list.length) % list.length; show(list[i]);
     }
     function hide() {
       v.classList.remove('open'); v.setAttribute('aria-hidden', 'true'); img.src = ''; document.body.style.overflow = ''; curCard = null;
     }
-    cards.forEach(function (card) {
-      card.addEventListener('click', function (e) {
-        if (!card.classList.contains('is-center')) { e.preventDefault(); e.stopImmediatePropagation(); return; }
-        e.stopImmediatePropagation(); show(card);
-      });
-    });
+    document.addEventListener('click', function (e) {
+      var card = e.target && e.target.closest ? e.target.closest('.poster-carousel .poster') : null;
+      if (!card) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      show(card);
+    }, true);
     var prev = v.querySelector('.viewer-prev'), next = v.querySelector('.viewer-next'), close = v.querySelector('.viewer-close');
-    if (prev) prev.onclick = function () { step(-1); };
-    if (next) next.onclick = function () { step(1); };
-    if (close) close.onclick = hide;
-    v.onclick = function (e) { if (e.target === v) hide(); };
+    if (prev) prev.addEventListener('click', function () { step(-1); });
+    if (next) next.addEventListener('click', function () { step(1); });
+    if (close) close.addEventListener('click', hide);
+    v.addEventListener('click', function (e) { if (e.target === v) hide(); });
     document.addEventListener('keydown', function (e) {
       if (!v.classList.contains('open')) return;
       if (e.key === 'Escape') hide();
