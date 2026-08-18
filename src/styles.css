@@ -812,3 +812,6 @@ section{max-width:1320px}
 }
 @media (prefers-reduced-motion: reduce){.poster-carousel .poster-track{animation:none}}
 @media (max-width:600px){.poster-carousel .poster-track{gap:16px}.poster-carousel .poster-track .poster{width:64vw}}
+
+/* Intro/loader screen removed */
+#loader{display:none !important}

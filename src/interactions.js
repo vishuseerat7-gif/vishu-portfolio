@@ -13,30 +13,18 @@ export function initPortfolio() {
   if (portfolioInitialized) return;
   portfolioInitialized = true;
 
-  /* ---------- FONT READY / FOUT GUARD ---------- */
+  /* ---------- FONT READY (FOUT guard disabled: no blank startup screen) ---------- */
   (function () {
-    document.documentElement.classList.add('fonts-loading');
-    var done = false;
-    function ready() {
-      if (done) return;
-      done = true;
+    // Do NOT add the fonts-loading class, so content is never hidden at startup.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () {
       document.documentElement.classList.remove('fonts-loading');
-    }
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ready);
-    setTimeout(ready, 3500);
+    });
   })();
 
-  /* ---------- LOADER ---------- */
+  /* ---------- LOADER (intro screen removed) ---------- */
   (function () {
-    function fade() {
-      var l = document.getElementById('loader');
-      if (!l) return;
-      l.style.transition = 'opacity .6s ease';
-      l.style.opacity = '0';
-      setTimeout(function () { l.style.display = 'none'; }, 650);
-    }
-    window.addEventListener('load', function () { setTimeout(fade, 2600); });
-    if (document.readyState === 'complete') setTimeout(fade, 2600);
+    var l = document.getElementById('loader');
+    if (l) l.style.display = 'none';
   })();
 
   /* ---------- SCROLL FILMSTRIP ---------- */
