@@ -724,3 +724,11 @@ html.fonts-loading nav,html.fonts-loading section,html.fonts-loading .marquee,ht
 
 /* rounded poster/video corners without changing poster assets */
 .poster img,.reel.video-card video,.cinematic-card video{border-radius:inherit}
+
+/* ===== ZOOM / VIEWPORT HARDENING (safe additions only) ===== */
+/* Prevent the hero from being cut off on mobile when the URL bar collapses/expands. */
+#hero{min-height:100svh}
+html,body{width:100%;max-width:100%}
+/* Smooth behaviour under browser zoom */
+.portfolio-carousel,#reels .reels-scroll.reel-stage,.cinematic-stage,.modeling-stage{will-change:scroll-position}
+@media (pointer:fine){body{overflow-x:hidden}}
