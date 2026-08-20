@@ -769,36 +769,29 @@ section{max-width:1320px}
   section{max-width:1560px}
 }
 
-/* ===== POSTER SECTION: staggered masonry placement (reference layout, native poster sizes) ===== */
-.portfolio-carousel-section .poster-carousel{
-  column-count:3; column-gap:32px;
-  max-width:1600px; margin:0 auto; padding:0 24px;
+/* ===== POSTER SECTION: merged masonry wall (all categories mixed, natural sizes, no crop) ===== */
+.portfolio-carousel-section .poster-carousel.poster-wall{
+  column-count:4; column-gap:30px;
+  max-width:1720px; margin:0 auto; padding:0 28px;
   overflow:visible; height:auto; scroll-snap-type:none;
 }
-.portfolio-carousel-section .poster-carousel > .poster,
+.poster-wall > .poster,
 .poster-carousel > .poster{
-  break-inside:avoid; display:block; margin:0 0 32px;
+  break-inside:avoid; display:block; margin:0 0 30px;
   width:100% !important; transform:none !important; opacity:1 !important;
   filter:none; scroll-snap-align:none;
-  border-radius:24px; border:1px solid var(--line);
-  box-shadow:0 20px 55px rgba(0,0,0,.45);
+  border-radius:20px; border:1px solid var(--line);
+  box-shadow:0 18px 50px rgba(0,0,0,.42);
 }
-.poster-carousel > .poster img{ width:100%; height:100%; border-radius:inherit; display:block; }
-/* varied sizes for staggered masonry (reference look) */
-/* portrait sections: song/flyer — tall / medium / square / medium */
-.poster-carousel:not(.ad-carousel) > .poster:nth-child(4n+1){ aspect-ratio:2/3; }
-.poster-carousel:not(.ad-carousel) > .poster:nth-child(4n+2){ aspect-ratio:3/4; }
-.poster-carousel:not(.ad-carousel) > .poster:nth-child(4n+3){ aspect-ratio:4/5; }
-.poster-carousel:not(.ad-carousel) > .poster:nth-child(4n+4){ aspect-ratio:3/4; }
-/* ad section: landscape variations */
-.ad-carousel > .poster:nth-child(3n+1){ aspect-ratio:16/9; }
-.ad-carousel > .poster:nth-child(3n+2){ aspect-ratio:4/3; }
-.ad-carousel > .poster:nth-child(3n+3){ aspect-ratio:3/2; }
-
-.poster-carousel > .poster:hover{
+/* natural sizes: song/flyer portrait 3:4, ad landscape 16:9 */
+.poster-wall > .poster{ aspect-ratio:3/4; }
+.poster-wall > .poster.ad{ aspect-ratio:16/9; }
+.poster-carousel > .poster img{ width:100%; height:100%; object-fit:cover; border-radius:inherit; display:block; }
+.poster-wall > .poster:hover{
   border-color:rgba(255,199,44,.6);
-  box-shadow:0 28px 75px rgba(0,0,0,.6);
+  box-shadow:0 26px 72px rgba(0,0,0,.6);
   transform:translateY(-6px) !important;
 }
-@media(max-width:1100px){ .portfolio-carousel-section .poster-carousel{ column-count:2; } }
-@media(max-width:640px){ .portfolio-carousel-section .poster-carousel{ column-count:1; } }
+@media(max-width:1200px){ .poster-wall{ column-count:3; } }
+@media(max-width:900px){ .poster-wall{ column-count:2; } }
+@media(max-width:600px){ .poster-wall{ column-count:1; } }
