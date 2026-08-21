@@ -31,7 +31,7 @@ const GALLERY = [
   { src: CDN + 'v1786349020/ChatGPT_Image_Aug_10_2026_12_48_26_PM_xi4e0y.png', h: 'portrait' },
 ];
 
-/* Song titles for the hero banner (index-matched to SONG_POSTS) */
+/* Song titles for the hero banner (index-matched to SONG_POSTERS) */
 const TITLES = ['YAADAN', 'NAZAR', 'JHOOM', 'LAMBE RASTE', 'MAAHI VE', 'TERA HUN', 'BARSHAN', 'RAAT'];
 
 export default function CinematicPosters() {
@@ -74,14 +74,14 @@ export default function CinematicPosters() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const hero = active >= 0 ? SONG_POSTS[active] : null;
+  const hero = active >= 0 ? SONG_POSTERS[active] : null;
 
   return (
     <section id="cinema-posters" className="cinema" ref={wrapRef}>
       {/* ------- DEFAULT: horizontal accordion ------- */}
       <div className={`cinema-accordion ${active >= 0 ? 'is-dimmed' : ''}`}>
         <div className="cinema-rail" role="list">
-          {SONG_POSTS.map((p, i) => (
+          {SONG_POSTERS.map((p, i) => (
             <div
               key={i}
               role="listitem"
