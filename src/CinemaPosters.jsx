@@ -102,29 +102,33 @@ export default function CinematicPosters() {
         <p className="cinema-hint">↗ Click a poster to expand</p>
       </div>
 
-      {/* ------- EXPANDED: cinematic hero banner (full viewport) ------- */}
+      {/* ------- EXPANDED: cinematic hero (modal popup, NOT fullscreen) ------- */}
       <div
         className={`cinema-hero ${active >= 0 ? 'is-open' : ''}`}
-        style={hero ? { '--hero-bg': `url(${hero.src})` } : {}}
         onClick={() => setActive(-1)}
       >
-        <div className="hero-scrim" />
-        <div className="hero-inner" onClick={(e) => e.stopPropagation()}>
-          <h1 className="hero-title">{hero && TITLES[active]}</h1>
-          <p className="hero-sub">NATH STUDIO PRESENTS</p>
-          <div className="hero-actions">
-            <button className="glass-btn" aria-label="Play">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-            <button className="glass-btn" aria-label="Add to playlist">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
-            </button>
-            <button className="back-btn" aria-label="Back">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            </button>
+        {hero && (
+          <div className="hero-frame" onClick={(e) => e.stopPropagation()}>
+            <img src={hero.src} alt={`Song ${active + 1}`} />
+            <button className="hero-close" aria-label="Close" onClick={() => setActive(-1)}>✕</button>
+            <div className="hero-scrim" />
+            <div className="hero-inner">
+              <p className="hero-sub">NATH STUDIO PRESENTS</p>
+              <h1 className="hero-title">{TITLES[active]}</h1>
+              <div className="hero-actions">
+                <button className="glass-btn" aria-label="Play">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <button className="glass-btn" aria-label="Add to playlist">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+                <button className="back-btn" aria-label="Back" onClick={() => setActive(-1)}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="scroll-cue">scroll</div>
-        </div>
+        )}
       </div>
 
       {/* ------- SCROLL STATE: masonry gallery ------- */}
