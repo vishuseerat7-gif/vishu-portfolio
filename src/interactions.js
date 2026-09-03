@@ -26,18 +26,7 @@ export function initPortfolio() {
     setTimeout(ready, 3500);
   })();
 
-  /* ---------- LOADER ---------- */
-  (function () {
-    function fade() {
-      var l = document.getElementById('loader');
-      if (!l) return;
-      l.style.transition = 'opacity .6s ease';
-      l.style.opacity = '0';
-      setTimeout(function () { l.style.display = 'none'; }, 650);
-    }
-    window.addEventListener('load', function () { setTimeout(fade, 2600); });
-    if (document.readyState === 'complete') setTimeout(fade, 2600);
-  })();
+  /* LOADER removed — site opens directly */
 
   /* ---------- SCROLL FILMSTRIP ---------- */
   (function () {
